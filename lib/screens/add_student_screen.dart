@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'dart:io';
-import 'package:hive_flutter/hive_flutter.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:student_app/database/box.dart';
+import 'package:provider/provider.dart';
 import 'package:student_app/models/student.dart';
-import 'package:student_app/screens/home_screen.dart';
+import 'package:student_app/models/students_model.dart';
 import 'package:student_app/util.dart';
 
 class ScreenAddStudent extends StatefulWidget {
@@ -257,7 +256,7 @@ class _ScreenAddStudentState extends State<ScreenAddStudent> {
   _save() async {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
-      Box<Student> studentBox = Boxes.getStudents();
+      var students = Provider.of<StudentsModel>(context, listen: false);
       Student student = Student(
           name: name!,
           age: age!,
@@ -267,15 +266,12 @@ class _ScreenAddStudentState extends State<ScreenAddStudent> {
           imageString: imageString ?? '');
 
       if (widget.action == 'edit') {
-        studentBox.put(widget.data!.key, student);
-        Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(builder: (context) {
-          return const HomeScreen();
-        }), (route) => false);
+        students.update(widget.data!.key, student);
       } else {
-        studentBox.add(student);
-        Navigator.of(context).pop();
+        students.add(student);
       }
+      int count = widget.action == 'edit' ? 2 : 1;
+      Navigator.popUntil(context, (route) => count-- == 0);
     }
   }
 }

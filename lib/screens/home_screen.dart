@@ -1,23 +1,15 @@
-import 'package:hive_flutter/hive_flutter.dart';
-import 'package:student_app/database/box.dart';
+import 'package:provider/provider.dart';
+import 'package:student_app/models/students_model.dart';
 import 'package:student_app/screens/add_student_screen.dart';
 import 'package:student_app/screens/search_screen.dart';
 import 'package:student_app/screens/view_details_screen.dart';
 import 'package:student_app/util.dart';
+import 'package:student_app/widgets/conform_dialog.dart';
 import '/models/student.dart';
 import 'package:flutter/material.dart';
 
-class HomeScreen extends StatefulWidget {
+class HomeScreen extends StatelessWidget {
   const HomeScreen({Key? key}) : super(key: key);
-  @override
-  State<HomeScreen> createState() => _HomeScreenState();
-}
-
-class _HomeScreenState extends State<HomeScreen> {
-  @override
-  void initState() {
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -48,10 +40,9 @@ class _HomeScreenState extends State<HomeScreen> {
         tooltip: 'Add student',
         child: const Icon(Icons.add),
       ),
-      body: ValueListenableBuilder(
-        valueListenable: Boxes.getStudents().listenable(),
-        builder: (BuildContext ctx, Box<Student> box, Widget? child) {
-          if (box.values.isEmpty) {
+      body: Consumer<StudentsModel>(
+        builder: (context, students, _) {
+          if (students.studentsList.isEmpty) {
             return Center(
               child: Row(
                 mainAxisSize: MainAxisSize.min,
@@ -71,7 +62,7 @@ class _HomeScreenState extends State<HomeScreen> {
           }
           return ListView.builder(
               itemBuilder: (context, index) {
-                Student curStudent = box.getAt(index)!;
+                Student curStudent = students.studentsList[index];
                 return GestureDetector(
                   onTap: () {
                     Navigator.of(context).push(
@@ -95,43 +86,25 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                       trailing: IconButton(
                           onPressed: () {
-                            _confirmDelete(context, curStudent);
+                            showDialog(
+                                context: context,
+                                builder: (context) => ConformDialog(
+                                      title:
+                                          'Are you sure to delete this student',
+                                      onConform: () {
+                                        students.delete(curStudent);
+                                        Navigator.pop(context);
+                                      },
+                                    ));
                           },
                           icon: const Icon(Icons.delete)),
                     ),
                   ),
                 );
               },
-              itemCount: box.length);
+              itemCount: students.studentsList.length);
         },
       ),
     );
-  }
-
-  void _confirmDelete(BuildContext context, Student curStudent) {
-    showDialog(
-        context: context,
-        builder: (context) => Theme(
-              data: ThemeData(primaryColor: Colors.blue),
-              child: AlertDialog(
-                content: const Text(
-                  'Are you sure to delete this student? ',
-                  style: TextStyle(fontWeight: FontWeight.w500),
-                ),
-                actions: [
-                  TextButton(
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      },
-                      child: const Text('No')),
-                  TextButton(
-                      onPressed: () {
-                        curStudent.delete();
-                        Navigator.of(context).pop();
-                      },
-                      child: const Text('Yes'))
-                ],
-              ),
-            ));
   }
 }

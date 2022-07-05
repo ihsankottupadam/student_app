@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:student_app/models/students_model.dart';
 import 'package:student_app/util.dart';
+import 'package:student_app/widgets/conform_dialog.dart';
 import '../models/student.dart';
 import 'add_student_screen.dart';
 
@@ -30,8 +33,14 @@ class StudentDetailsScreen extends StatelessWidget {
           IconButton(
               tooltip: 'Delete',
               onPressed: () {
-                student.delete();
-                Navigator.of(context).pop();
+                showDialog(
+                    context: context,
+                    builder: (context) => ConformDialog(
+                        title: 'Are you sure',
+                        onConform: () {
+                          Provider.of<StudentsModel>(context).delete(student);
+                          Navigator.pop(context);
+                        }));
               },
               icon: const Icon(Icons.delete))
         ],

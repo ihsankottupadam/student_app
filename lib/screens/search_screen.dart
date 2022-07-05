@@ -46,8 +46,9 @@ class SearchScreen extends SearchDelegate {
               close(context, null);
               Navigator.of(context).push(
                 MaterialPageRoute(
-                  builder: (context) =>
-                      StudentDetailsScreen(student: curStudent),
+                  builder: (context) => StudentDetailsScreen(
+                    student: curStudent,
+                  ),
                 ),
               );
             },
