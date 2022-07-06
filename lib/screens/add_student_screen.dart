@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
-import 'package:provider/provider.dart';
 import 'package:student_app/models/student.dart';
-import 'package:student_app/models/students_model.dart';
+import 'package:student_app/controllers/students_controller.dart';
 import 'package:student_app/util.dart';
 
 class ScreenAddStudent extends StatefulWidget {
@@ -219,7 +219,7 @@ class _ScreenAddStudentState extends State<ScreenAddStudent> {
                   height: 40,
                   child: ElevatedButton.icon(
                       onPressed: () {
-                        Navigator.pop(ctx);
+                        Get.back();
                         _choosePhoto(ImageSource.camera);
                       },
                       icon: const Icon(Icons.camera_alt),
@@ -231,7 +231,7 @@ class _ScreenAddStudentState extends State<ScreenAddStudent> {
                   height: 40,
                   child: ElevatedButton.icon(
                       onPressed: () {
-                        Navigator.pop(ctx);
+                        Get.back();
                         _choosePhoto(ImageSource.gallery);
                       },
                       icon: const Icon(Icons.image),
@@ -256,7 +256,7 @@ class _ScreenAddStudentState extends State<ScreenAddStudent> {
   _save() async {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
-      var students = Provider.of<StudentsModel>(context, listen: false);
+      StudentsController studentsController = Get.find();
       Student student = Student(
           name: name!,
           age: age!,
@@ -266,12 +266,11 @@ class _ScreenAddStudentState extends State<ScreenAddStudent> {
           imageString: imageString ?? '');
 
       if (widget.action == 'edit') {
-        students.update(widget.data!.key, student);
+        studentsController.updateStudent(widget.data!.key, student);
       } else {
-        students.add(student);
+        studentsController.addStudent(student);
       }
-      int count = widget.action == 'edit' ? 2 : 1;
-      Navigator.popUntil(context, (route) => count-- == 0);
+      Get.until((route) => Get.currentRoute == '/home');
     }
   }
 }

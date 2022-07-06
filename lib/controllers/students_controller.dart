@@ -1,32 +1,32 @@
-import 'package:flutter/cupertino.dart';
+import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 import 'package:student_app/models/student.dart';
 
-class StudentsModel extends ChangeNotifier {
+class StudentsController extends GetxController {
   final Box<Student> _box = Hive.box('studentsDB');
   List<Student> _studentsList = [];
-  StudentsModel() {
+  StudentsController() {
     _getStudents();
   }
 
   get studentsList => _studentsList;
 
-  add(Student student) {
+  addStudent(Student student) {
     _box.add(student);
     _getStudents();
-    notifyListeners();
+    update();
   }
 
-  update(var key, Student student) {
+  updateStudent(var key, Student student) {
     _box.put(key, student);
     _getStudents();
-    notifyListeners();
+    update();
   }
 
-  delete(Student student) {
+  deleteStudent(Student student) {
     student.delete();
     _getStudents();
-    notifyListeners();
+    update();
   }
 
   _getStudents() {

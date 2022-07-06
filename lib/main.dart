@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-
-import 'package:provider/provider.dart';
-import 'package:student_app/models/students_model.dart';
 import 'package:student_app/screens/home_screen.dart';
 import 'package:student_app/screens/splash_screen.dart';
 
@@ -21,18 +19,13 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => StudentsModel(),
-      child: MaterialApp(
-        title: 'BroTotype',
-        theme: ThemeData(
-            primarySwatch: buildMaterialColor(const Color(0xff26384f))),
-        home: const SplashScreen(),
-        routes: <String, WidgetBuilder>{
-          "/Home": (BuildContext context) => const HomeScreen()
-        },
-        debugShowCheckedModeBanner: false,
-      ),
+    return GetMaterialApp(
+      title: 'BroTotype',
+      theme:
+          ThemeData(primarySwatch: buildMaterialColor(const Color(0xff26384f))),
+      home: const SplashScreen(),
+      getPages: [GetPage(name: '/home', page: () => HomeScreen())],
+      debugShowCheckedModeBanner: false,
     );
   }
 

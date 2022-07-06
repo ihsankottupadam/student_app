@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:student_app/database/box.dart';
+import 'package:get/get.dart';
+import 'package:student_app/controllers/students_controller.dart';
 import 'package:student_app/models/student.dart';
 import 'package:student_app/screens/view_details_screen.dart';
 import 'package:student_app/util.dart';
 
 class SearchScreen extends SearchDelegate {
-  SearchScreen() : super(searchFieldLabel: 'Search student');
-  List<Student> students = Boxes.getStudents().values.toList();
+  SearchScreen() : super(searchFieldLabel: 'Search student') {
+    StudentsController studentsController = Get.find();
+    students = studentsController.studentsList;
+  }
+  late List<Student> students;
+
   @override
   List<Widget>? buildActions(BuildContext context) {
     return [
@@ -44,13 +49,7 @@ class SearchScreen extends SearchDelegate {
           return InkWell(
             onTap: () {
               close(context, null);
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => StudentDetailsScreen(
-                    student: curStudent,
-                  ),
-                ),
-              );
+              Get.to(() => StudentDetailsScreen(student: curStudent));
             },
             child: Card(
               elevation: 2,
@@ -86,12 +85,7 @@ class SearchScreen extends SearchDelegate {
           return InkWell(
             onTap: () {
               close(context, null);
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) =>
-                      StudentDetailsScreen(student: curStudent),
-                ),
-              );
+              Get.to(() => StudentDetailsScreen(student: curStudent));
             },
             child: Card(
               elevation: 2,

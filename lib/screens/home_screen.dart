@@ -1,5 +1,5 @@
-import 'package:provider/provider.dart';
-import 'package:student_app/models/students_model.dart';
+import 'package:get/get.dart';
+import 'package:student_app/controllers/students_controller.dart';
 import 'package:student_app/screens/add_student_screen.dart';
 import 'package:student_app/screens/search_screen.dart';
 import 'package:student_app/screens/view_details_screen.dart';
@@ -9,8 +9,8 @@ import '/models/student.dart';
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatelessWidget {
-  const HomeScreen({Key? key}) : super(key: key);
-
+  HomeScreen({Key? key}) : super(key: key);
+  final controller = Get.put(StudentsController());
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -30,19 +30,14 @@ class HomeScreen extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) =>
-                  const ScreenAddStudent(action: 'add', data: null),
-            ),
-          );
+          Get.to(() => const ScreenAddStudent(action: 'add', data: null));
         },
         tooltip: 'Add student',
         child: const Icon(Icons.add),
       ),
-      body: Consumer<StudentsModel>(
-        builder: (context, students, _) {
-          if (students.studentsList.isEmpty) {
+      body: GetBuilder<StudentsController>(
+        builder: (studentsController) {
+          if (studentsController.studentsList.isEmpty) {
             return Center(
               child: Row(
                 mainAxisSize: MainAxisSize.min,
@@ -62,15 +57,10 @@ class HomeScreen extends StatelessWidget {
           }
           return ListView.builder(
               itemBuilder: (context, index) {
-                Student curStudent = students.studentsList[index];
+                Student curStudent = studentsController.studentsList[index];
                 return GestureDetector(
                   onTap: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) =>
-                            StudentDetailsScreen(student: curStudent),
-                      ),
-                    );
+                    Get.to(() => StudentDetailsScreen(student: curStudent));
                   },
                   child: Card(
                     elevation: 2,
@@ -92,8 +82,9 @@ class HomeScreen extends StatelessWidget {
                                       title:
                                           'Are you sure to delete this student',
                                       onConform: () {
-                                        students.delete(curStudent);
-                                        Navigator.pop(context);
+                                        studentsController
+                                            .deleteStudent(curStudent);
+                                        Get.back();
                                       },
                                     ));
                           },
@@ -102,7 +93,7 @@ class HomeScreen extends StatelessWidget {
                   ),
                 );
               },
-              itemCount: students.studentsList.length);
+              itemCount: studentsController.studentsList.length);
         },
       ),
     );

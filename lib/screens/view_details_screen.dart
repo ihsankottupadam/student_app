@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:student_app/models/students_model.dart';
+import 'package:get/get.dart';
+import 'package:student_app/controllers/students_controller.dart';
 import 'package:student_app/util.dart';
 import 'package:student_app/widgets/conform_dialog.dart';
 import '../models/student.dart';
@@ -22,12 +22,10 @@ class StudentDetailsScreen extends StatelessWidget {
           IconButton(
               tooltip: 'Edit',
               onPressed: () {
-                Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) => ScreenAddStudent(
-                    action: 'edit',
-                    data: student,
-                  ),
-                ));
+                Get.to(() => ScreenAddStudent(
+                      action: 'edit',
+                      data: student,
+                    ));
               },
               icon: const Icon(Icons.edit)),
           IconButton(
@@ -38,8 +36,9 @@ class StudentDetailsScreen extends StatelessWidget {
                     builder: (context) => ConformDialog(
                         title: 'Are you sure',
                         onConform: () {
-                          Provider.of<StudentsModel>(context).delete(student);
-                          Navigator.pop(context);
+                          StudentsController studentsController = Get.find();
+                          studentsController.deleteStudent(student);
+                          Get.until((route) => Get.currentRoute == '/home');
                         }));
               },
               icon: const Icon(Icons.delete))
